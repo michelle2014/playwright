@@ -76,7 +76,7 @@ export default defineConfig({
 
   expect: {
     toHaveScreenshot: {
-      maxDiffPixels: 80,
+      // maxDiffPixels: 80,
       // stylePath: './screenshot.css'
     },
   },
