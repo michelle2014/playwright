@@ -74,6 +74,13 @@ export default defineConfig({
     // },
   ],
 
+  expect: {
+    toHaveScreenshot: {
+      maxDiffPixels: 80,
+      // stylePath: './screenshot.css'
+    },
+  },
+
   /* Run your local dev server before starting the tests */
   // webServer: {
   //   command: 'npm run start',
