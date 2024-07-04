@@ -14,3 +14,10 @@ test('non-image visual comparisons test', async ({ page }) => {
   await page.goto('https://playwright.dev');
   expect(await page.textContent('.hero__title')).toMatchSnapshot('hero.txt');
 });
+
+test('element snapshot', async ({ page }) => {
+  await page.goto('https://playwright.dev');
+  const locator = page.locator('.DocSearch').first();
+  await expect(locator).toBeVisible();
+  await expect(locator).toHaveScreenshot();
+});
