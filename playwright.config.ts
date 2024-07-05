@@ -4,6 +4,16 @@ import dotenv from 'dotenv';
 // Read from default ".env" file.
 dotenv.config();
 
+const crossBrowserConfig = {
+  testDir: './tests/cross-browser',
+  snapshotPathTemplate: '.test/cross/{testFilePath}/{arg}{ext}',
+  expect: {
+    toHaveScreenshot: { maxDiffPixelRatio: 0.1 },
+  },
+};
+
+const isCI = !!process.env.CI;
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -18,13 +28,20 @@ export default defineConfig({
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: !!process.env.CI,
+  forbidOnly: isCI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 0,
-  /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : undefined,
+  retries: isCI ? 2 : 0,
+  timeout: 1000 * 60,
+  /* Opt in parallel tests on CI. */
+  workers: isCI ? 1 : '50%',
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [
+    ['html', {
+      outputFolder: '.test/spec/results',
+      open: 'never',
+    }],
+    isCI ? ['github'] : ['line'],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
@@ -34,7 +51,9 @@ export default defineConfig({
     trace: 'on-first-retry',
   },
   // Folder for test artifacts such as screenshots, videos, traces, etc.
-  outputDir: 'test-results',
+  outputDir: '.test/spec/output',
+  snapshotPathTemplate: '.test/spec/snaps/{projectName}/{testFilePath}/{arg}{ext}',
+  testMatch: '*.spec.{ts,tsx}',
 
   /* Configure projects for major browsers */
   projects: [
@@ -42,16 +61,23 @@ export default defineConfig({
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    {
+      name: 'cross-chromium',
+      use: { ...devices['Desktop Chrome'] },
+      ...crossBrowserConfig,
+    },
+    {
+      name: 'cross-firefox',
+      use: { ...devices['Desktop Firefox'] },
+      dependencies: ['cross-chromium'],
+      ...crossBrowserConfig,
+    },
+    {
+      name: 'cross-browser',
+      use: { ...devices['Desktop Safari'] },
+      dependencies: ['cross-firefox'],
+      ...crossBrowserConfig,
+    },
 
     /* Test against mobile viewports. */
     // {
@@ -74,12 +100,18 @@ export default defineConfig({
     // },
   ],
 
-  expect: {
-    toHaveScreenshot: {
-      // maxDiffPixels: 80,
-      // stylePath: './screenshot.css'
-    },
-  },
+  // expect: {
+  //   toHaveScreenshot: {
+  //     threshold: 0.25,
+  //     maxDiffPixelRatio: 0.025,
+  //     maxDiffPixels: 25,
+  //   },
+  //   toMatchSnapshot: {
+  //     threshold: 0.25,
+  //     maxDiffPixelRatio: 0.025,
+  //     maxDiffPixels: 25,
+  //   }
+  // },
 
   /* Run your local dev server before starting the tests */
   // webServer: {
