@@ -23,8 +23,18 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run type checks
       run: npx tsc -p tsconfig.json --noEmit
+    - name: Set up cache
+      id: cache
+      uses: actions/cache@v4
+      with:
+        key: cache/${{github.repository}}/${{github.ref}}
+        restore-keys: cache/${{github.repository}}/refs/heads/main
+        path: .test/**
+    - name: Initialize snapshots
+      if: ${{steps.cache.outputs.cache-hit != 'true'}}
+      run: npx playwright test --update-snapshots
     - name: Run Playwright tests
-      run: npx playwright test --ignore-snapshots
+      run: npx playwright test
     - uses: actions/upload-artifact@v4
       if: always()
       with:
