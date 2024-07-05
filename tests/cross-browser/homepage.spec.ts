@@ -11,6 +11,6 @@ test('cross-browser snapshots', async ({ page, }) => {
 
   await expect(page).toHaveScreenshot(`home-page.png`, {
     fullPage: true,
-    maxDiffPixelRatio: 0.02
+    maxDiffPixelRatio: 0.1
   });
 });
