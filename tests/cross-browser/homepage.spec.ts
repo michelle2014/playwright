@@ -4,7 +4,7 @@ test('cross-browser snapshots', async ({ page, }) => {
   await page.goto('https://www.browsercat.com');
   await page.setViewportSize({
     width: 1280,
-    height: 7344,
+    height: 7346,
   });
   await page.locator(':has(> figure)')
     .evaluate(($el) => $el.remove());
