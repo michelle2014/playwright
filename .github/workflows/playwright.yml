@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
     inputs:
       update-snapshots:
-        description: "Update snapshotsssss?"
+        description: "Update snapshots?"
         type: boolean
 jobs:
   run-tests:
