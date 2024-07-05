@@ -33,7 +33,7 @@ export default defineConfig({
   retries: isCI ? 2 : 0,
   timeout: 1000 * 60,
   /* Opt in parallel tests on CI. */
-  workers: isCI ? 1 : '50%',
+  workers: isCI ? 5 : '50%',
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['html', {
