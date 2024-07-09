@@ -6,6 +6,7 @@ dotenv.config();
 
 const crossBrowserConfig = {
   testDir: './tests/cross-browser',
+  snapshotPathTemplate: '.test/spec/snaps/{projectName}/{testFilePath}/{arg}{ext}',
   expect: {
     toHaveScreenshot: { maxDiffPixelRatio: 0.1 },
   },
